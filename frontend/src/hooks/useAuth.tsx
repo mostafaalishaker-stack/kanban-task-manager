@@ -24,6 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function login(email: string, password: string) {
     const { data } = await api.post("/auth/login", { email, password });
+    // In production, use httpOnly cookies instead of localStorage for better XSS protection
     localStorage.setItem("token", data.token);
     setToken(data.token);
     setUser(data.user);
@@ -31,6 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function register(email: string, name: string, password: string) {
     const { data } = await api.post("/auth/register", { email, name, password });
+    // In production, use httpOnly cookies instead of localStorage for better XSS protection
     localStorage.setItem("token", data.token);
     setToken(data.token);
     setUser(data.user);

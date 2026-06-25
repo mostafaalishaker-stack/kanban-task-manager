@@ -5,9 +5,11 @@ import { Card as CardType } from "../types";
 interface Props {
   card: CardType;
   isOverlay?: boolean;
+  onDelete?: (id: string) => void;
+  onEdit?: (card: CardType) => void;
 }
 
-export function Card({ card, isOverlay }: Props) {
+export function Card({ card, isOverlay, onDelete, onEdit }: Props) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: card.id,
     disabled: isOverlay,
@@ -27,7 +29,15 @@ export function Card({ card, isOverlay }: Props) {
       {...listeners}
       className={`bg-white rounded-lg p-4 shadow-sm border border-gray-200 cursor-grab active:cursor-grabbing ${isOverlay ? "rotate-3 shadow-xl" : ""}`}
     >
-      <p className="text-sm font-medium text-gray-800">{card.title}</p>
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-sm font-medium text-gray-800">{card.title}</p>
+        {!isOverlay && onEdit && onDelete && (
+          <div className="flex gap-1 flex-shrink-0">
+            <button onClick={(e) => { e.stopPropagation(); onEdit(card); }} className="text-xs text-gray-400 hover:text-indigo-600 p-1" title="Edit card"><i className="fas fa-pencil-alt"></i></button>
+            <button onClick={(e) => { e.stopPropagation(); onDelete(card.id); }} className="text-xs text-gray-400 hover:text-red-600 p-1" title="Delete card"><i className="fas fa-times"></i></button>
+          </div>
+        )}
+      </div>
       {card.description && (
         <p className="text-xs text-gray-500 mt-1 line-clamp-2">{card.description}</p>
       )}

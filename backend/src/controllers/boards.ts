@@ -1,8 +1,6 @@
 import { Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import prisma from "../lib/prisma";
 import { AuthRequest } from "../types";
-
-const prisma = new PrismaClient();
 
 export async function getBoards(req: AuthRequest, res: Response) {
   const boards = await prisma.board.findMany({
@@ -34,15 +32,28 @@ export async function createBoard(req: AuthRequest, res: Response) {
 export async function updateBoard(req: AuthRequest, res: Response) {
   const { id } = req.params;
   const { title } = req.body;
-  const board = await prisma.board.update({
-    where: { id },
-    data: { title },
-  });
-  res.json(board);
+  try {
+    const existing = await prisma.board.findUnique({ where: { id } });
+    if (!existing || existing.userId !== req.userId) {
+      return res.status(404).json({ error: "Board not found" });
+    }
+    const board = await prisma.board.update({
+      where: { id },
+      data: { title },
+    });
+    res.json(board);
+  } catch (err) {
+    console.error("Error updating board:", err);
+    res.status(500).json({ error: "Failed to update board" });
+  }
 }
 
 export async function deleteBoard(req: AuthRequest, res: Response) {
   const { id } = req.params;
+  const existing = await prisma.board.findUnique({ where: { id } });
+  if (!existing || existing.userId !== req.userId) {
+    return res.status(404).json({ error: "Board not found" });
+  }
   await prisma.board.delete({ where: { id } });
   res.status(204).send();
 }

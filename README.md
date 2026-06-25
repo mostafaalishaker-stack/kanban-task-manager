@@ -1,6 +1,6 @@
 # Kanban Task Manager
 
-A full-stack task management application with drag-and-drop Kanban board, user authentication, and real-time collaboration.
+A full-stack task management application with drag-and-drop Kanban board and user authentication.
 
 ## Tech Stack
 
@@ -8,7 +8,7 @@ A full-stack task management application with drag-and-drop Kanban board, user a
 |-------|-----------|
 | Frontend | React 18, TypeScript, Vite, TailwindCSS |
 | Backend | Node.js, Express, TypeScript |
-| Database | PostgreSQL (Prisma ORM) |
+| Database | SQLite (Prisma ORM) |
 | Auth | JWT (bcrypt + jsonwebtoken) |
 | Deployment | Vercel (frontend) + Railway (backend) |
 
@@ -18,7 +18,6 @@ A full-stack task management application with drag-and-drop Kanban board, user a
 - Create/Edit/Delete boards
 - Drag-and-drop task management
 - Task cards with due dates, labels, assignees
-- Real-time updates
 - Responsive design
 
 ## Setup
@@ -28,7 +27,7 @@ A full-stack task management application with drag-and-drop Kanban board, user a
 cd backend
 npm install
 cp .env.example .env
-npx prisma migrate dev
+npx prisma migrate dev --name init
 npm run dev
 ```
 

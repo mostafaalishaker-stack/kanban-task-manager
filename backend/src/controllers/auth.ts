@@ -1,12 +1,25 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { PrismaClient } from "@prisma/client";
+import prisma from "../lib/prisma";
+import z from "zod";
 
-const prisma = new PrismaClient();
+const registerSchema = z.object({
+  email: z.string().email(),
+  name: z.string().min(1).max(100),
+  password: z.string().min(6).max(128),
+});
 
-export async function register(req: any, res: Response) {
-  const { email, name, password } = req.body;
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
+});
+
+export async function register(req: Request, res: Response) {
+  const parsed = registerSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: parsed.error.errors[0].message });
+
+  const { email, name, password } = parsed.data;
   const exists = await prisma.user.findUnique({ where: { email } });
   if (exists) return res.status(400).json({ error: "Email already in use" });
 
@@ -19,8 +32,11 @@ export async function register(req: any, res: Response) {
   res.status(201).json({ token, user: { id: user.id, email: user.email, name: user.name } });
 }
 
-export async function login(req: any, res: Response) {
-  const { email, password } = req.body;
+export async function login(req: Request, res: Response) {
+  const parsed = loginSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: parsed.error.errors[0].message });
+
+  const { email, password } = parsed.data;
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) return res.status(400).json({ error: "Invalid credentials" });
 

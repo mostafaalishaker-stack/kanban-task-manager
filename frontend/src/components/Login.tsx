@@ -1,5 +1,6 @@
 import { useState, FormEvent } from "react";
 import { useAuth } from "../hooks/useAuth";
+import toast from "react-hot-toast";
 
 export function Login() {
   const { login, register } = useAuth();
@@ -14,7 +15,7 @@ export function Login() {
       if (isRegister) await register(email, name, password);
       else await login(email, password);
     } catch (err: any) {
-      alert(err.response?.data?.error || "Something went wrong");
+      toast.error(err.response?.data?.error || "Something went wrong");
     }
   }
 
@@ -26,31 +27,43 @@ export function Login() {
           {isRegister ? "Create an account" : "Welcome back"}
         </p>
         {isRegister && (
+          <div className="mb-4">
+            <label htmlFor="name-input" className="sr-only">Name</label>
+            <input
+              id="name-input"
+              type="text"
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              required
+            />
+          </div>
+        )}
+        <div className="mb-4">
+          <label htmlFor="email-input" className="sr-only">Email</label>
           <input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-3 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            id="email-input"
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
             required
           />
-        )}
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-4 py-3 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full px-4 py-3 border rounded-lg mb-6 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          required
-        />
+        </div>
+        <div className="mb-6">
+          <label htmlFor="password-input" className="sr-only">Password</label>
+          <input
+            id="password-input"
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            required
+          />
+        </div>
         <button
           type="submit"
           className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition"

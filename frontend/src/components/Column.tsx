@@ -1,14 +1,16 @@
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useDroppable } from "@dnd-kit/core";
-import { Column as ColumnType } from "../types";
+import { Column as ColumnType, Card as CardType } from "../types";
 import { Card } from "./Card";
 
 interface Props {
   column: ColumnType;
   onAddCard: () => void;
+  onDeleteCard: (id: string) => void;
+  onEditCard: (card: CardType) => void;
 }
 
-export function Column({ column, onAddCard }: Props) {
+export function Column({ column, onAddCard, onDeleteCard, onEditCard }: Props) {
   const { setNodeRef } = useDroppable({ id: column.id });
 
   return (
@@ -20,7 +22,7 @@ export function Column({ column, onAddCard }: Props) {
       <SortableContext items={column.cards.map((c) => c.id)} strategy={verticalListSortingStrategy}>
         <div ref={setNodeRef} className="space-y-3 min-h-[100px]">
           {column.cards.map((card) => (
-            <Card key={card.id} card={card} />
+            <Card key={card.id} card={card} onDelete={onDeleteCard} onEdit={onEditCard} />
           ))}
         </div>
       </SortableContext>
